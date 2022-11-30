@@ -1,24 +1,29 @@
 import React, { Component } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Button, SafeAreaView, Image, Touch, TouchableOpacity, Platform } from 'react-native';
-
-//console.log('started')
+import Clock from './components/clock';
+import Todo from './components/todo';
 
 class App extends Component {
   state = { 
     time: {
       date: new Date().toString(),
+      month: '',
+      day: '',
+      weekday: '',
       hour: new Date().getHours().toString(),
-      amPm: '',
+      amPm: '--',
       military: false,
       min: new Date().getMinutes().toString(),
-      sec: new Date().getSeconds().toString()
+      sec: new Date().getSeconds().toString(),
+      greeting: ''
     }
-   } 
-
+  }
   
   componentDidMount() {
     const time = this.state.time
+    const week = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    const month = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
     function getTime() {
       const hour = new Date().getHours()
@@ -30,6 +35,12 @@ class App extends Component {
       time.min = min < 10 ? '0' + min : min.toString()
       time.sec = sec < 10 ? '0' + sec : sec.toString()
       time.amPm = time.military ? '--' : hour < 12 ? 'AM' : 'PM'
+
+      time.weekday = week[new Date().getDay()]
+      time.month = month[new Date().getMonth()]
+      time.day = new Date().getDate()
+
+      time.greeting = hour < 6 ? 'Good Evening' : hour < 12 ? 'Good Morning' : hour < 18 ? 'Good Afternoon' : 'Good Evening'
     }
     getTime()
     this.setState({time})
@@ -49,38 +60,25 @@ class App extends Component {
 
   render() { 
     return (
-      <View style={styles.container}>
+    <View style={styles.container}>
 
-        <TouchableOpacity onPress={this.handleClockPress}>
+      <StatusBar style="light" />
 
-        <Text style={{top: 25, alignSelf: 'center', paddingLeft: 10, paddingRight: 10}}>{this.militaryMessage}</Text>
+      <Text style={[styles.greeting, styles.fonts.ssm]}>{this.state.time.greeting}</Text>
 
-          <View style={styles.clock.container}>
+       <Clock 
+       onPress={this.handleClockPress}
+       militaryMessage={this.militaryMessage}
+       hour={this.state.time.hour}
+       min={this.state.time.min}
+       sec={this.state.time.sec}
+       amPm={this.state.time.amPm}
+       weekday={this.state.time.weekday}
+       month={this.state.time.month}
+       day={this.state.time.day}
+       />
 
-            <Text style={[styles.clock, styles.fonts.ssl]}>
-              {this.state.time.hour + ':' + this.state.time.min} 
-            </Text>
-
-            <View style={styles.clock.last}>
-
-              <View style={styles.clock.last.text.TOP}>
-                <Text style={[styles.clock.last.text, styles.fonts.ssl, styles.fonts.colors.pale]}>
-                  {this.state.time.sec}
-                </Text>
-              </View>
-
-              <View style={styles.clock.last.text.BOTTOM}>
-                <Text style={[styles.clock.last.text]}>
-                  {this.state.time.amPm}
-                </Text>
-              </View>
-
-            </View>
-
-          </View>
-       </TouchableOpacity>
-
-       <StatusBar style="auto" />
+       <Todo/>
 
     </View>
     );
@@ -91,46 +89,26 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: 'rgb(40, 40, 48)',
+    padding: 20,
     paddingTop: 40,
     alignItems: 'center',
   },
 
-  clock: {
-    fontSize: 74,
-    paddingRight: 10,
-
-    container: {
-      backgroundColor: '',
-      padding: 10,
-      paddingLeft: 20,
-      paddingRight: 20,
-      borderWidth: 2,
-      borderRadius: 15,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center'
-    },
-    last: {
-      alignItems: 'center',
-      text: {
-        fontSize: 37,
-        TOP: {
-          top: 11,
-        },
-        BOTTOM: {
-          top: -10
-        }
-      }
-    }
+  greeting: {
+    fontSize: 30,
+    color: 'white'
   },
+  
   fonts: {
     mono: {fontFamily: 'monospace'},
     ssl: {fontFamily: 'sans-serif-light'},
+    ssc: {fontFamily: 'sans-serif-condensed'},
+    ssm: {fontFamily: 'sans-serif-medium'},
+    serif: {fontFamily: 'serif'},
 
     colors: {
-      red: {color: 'red'},
-      pale: {color: "rgb(150,150,150)"}
+      pale: {color: "rgb(170,170,170)"}
     }
   }
 });
