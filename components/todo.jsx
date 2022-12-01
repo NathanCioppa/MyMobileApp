@@ -24,8 +24,10 @@ class Todo extends Component {
         <View style={styles.container}>
 
             <TextInput style={[styles.input, styles.fonts.ssc, {borderBottomColor: this.state.underline}]}
+            ref={this.props.todoRef}
             onChangeText={inputValue => this.setState({inputValue})} 
-            onSubmitEditing={() => this.props.onSubmit(this.state.inputValue)}
+            onSubmitEditing={() => {this.props.onSubmit(this.state.inputValue), this.setState({inputValue: ''}) }}
+            value={this.state.inputValue}
 
             placeholder='What are you doing today?'
             placeholderTextColor="rgb(170,170,170)"

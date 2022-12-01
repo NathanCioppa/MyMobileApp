@@ -73,9 +73,15 @@ class App extends Component {
       })
 
       this.newId++
+      //this.todoRef.current.clear()
       this.setState({todo})
     }
     
+  }
+
+  constructor() {
+    super()
+    this.todoRef = React.createRef()
   }
 
   render() { 
@@ -99,6 +105,7 @@ class App extends Component {
        />
 
        <Todo
+       todoRef={this.todoRef}
        onSubmit={this.handleSubmit}
        todo={this.state.todo}
        />
