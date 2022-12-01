@@ -17,7 +17,10 @@ class App extends Component {
       min: new Date().getMinutes().toString(),
       sec: new Date().getSeconds().toString(),
       greeting: ''
-    }
+    },
+    
+    todo: []
+
   }
   
   componentDidMount() {
@@ -58,6 +61,23 @@ class App extends Component {
     this.militaryMessage = this.state.time.military ? 'Showing military time, tap to change' : ''
   }
 
+  newId = 0
+
+  handleSubmit = value => {
+    if (value !== '') {
+      const todo = this.state.todo
+
+      this.state.todo.push({
+      id: this.newId,
+      value: value
+      })
+
+      this.newId++
+      this.setState({todo})
+    }
+    
+  }
+
   render() { 
     return (
     <View style={styles.container}>
@@ -78,7 +98,10 @@ class App extends Component {
        day={this.state.time.day}
        />
 
-       <Todo/>
+       <Todo
+       onSubmit={this.handleSubmit}
+       todo={this.state.todo}
+       />
 
     </View>
     );
@@ -90,7 +113,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'rgb(40, 40, 48)',
-    padding: 20,
+    padding: 10,
     paddingTop: 40,
     alignItems: 'center',
   },
