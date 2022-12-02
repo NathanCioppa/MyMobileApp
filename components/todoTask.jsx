@@ -7,7 +7,7 @@ class TodoTask extends Component {
     render() { 
         return (
             <View style={styles.container}>
-                <Text style={[styles.text]}>{this.props.value}</Text>
+                <Text style={[styles.text, styles.fonts.ssc]}>{this.props.value}</Text>
 
                 <TouchableOpacity style={styles.delete}
                     onPress={() => this.props.onDelete(this.props.id)}

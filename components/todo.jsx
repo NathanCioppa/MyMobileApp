@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Button, SafeAreaView, Image, Touch, TouchableOpacity, Platform, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Button, SafeAreaView, Image, Touch, TouchableOpacity, Platform, TextInput, ScrollView} from 'react-native';
 import TodoTask from './todoTask';
 
 class Todo extends Component {
@@ -35,7 +35,7 @@ class Todo extends Component {
             onBlur={() => this.handleBlur()}
             />
 
-            <View style={{marginTop: 20}}>
+            <ScrollView style={{marginTop: 20}}>
                 {this.props.todo.map(todo => (
                 <TodoTask
                 key={todo.id}
@@ -44,9 +44,7 @@ class Todo extends Component {
                 onDelete={this.props.onDelete}
                 />
                 ))}
-                
-                
-            </View>
+            </ScrollView>
         
         </View>
         );
