@@ -41,6 +41,7 @@ class Todo extends Component {
                 key={todo.id}
                 id={todo.id}
                 value={todo.value}
+                onDelete={this.props.onDelete}
                 />
                 ))}
                 

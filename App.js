@@ -75,8 +75,12 @@ class App extends Component {
       this.newId++
       //this.todoRef.current.clear()
       this.setState({todo})
-    }
-    
+    } 
+  }
+
+  handleDelete = id => {
+    const todo = this.state.todo.filter(task => task.id !== id)
+    this.setState({todo})
   }
 
   constructor() {
@@ -107,6 +111,7 @@ class App extends Component {
        <Todo
        todoRef={this.todoRef}
        onSubmit={this.handleSubmit}
+       onDelete={this.handleDelete}
        todo={this.state.todo}
        />
 

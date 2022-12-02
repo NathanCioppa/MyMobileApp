@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Button, SafeAreaView, Image, Touch, TouchableOpacity, Platform } from 'react-native';
+import { StyleSheet, Text, View, Button, SafeAreaView, Image, Touch, TouchableOpacity, Platform, Dimensions } from 'react-native';
 
 
 class TodoTask extends Component {
@@ -8,6 +8,13 @@ class TodoTask extends Component {
         return (
             <View style={styles.container}>
                 <Text style={[styles.text]}>{this.props.value}</Text>
+
+                <TouchableOpacity style={styles.delete}
+                    onPress={() => this.props.onDelete(this.props.id)}
+                >
+                    <Text style={styles.fonts.colors.pale}>X</Text>
+                </TouchableOpacity>
+                
             </View>
         );
     }
@@ -17,14 +24,27 @@ const styles = StyleSheet.create({
     container: {
         marginTop: 5,
         marginBottom: 5,
+        marginEnd: 5,
         borderStartWidth: 3,
         borderRadius: 2,
-        borderColor: 'steelblue'
+        borderColor: 'steelblue',
+        backgroundColor: 'rgba(255, 255, 255, 0.04)',
+        flexDirection: 'row',
+        justifyContent:'space-between',
+        alignItems: 'center',
+        width: Dimensions.get('window').width - 20
+        
     },
     text: {
-        padding: 3,
+        padding: 5,
         color: 'white',
         fontSize: 20,
+        width: Dimensions.get('window').width - 50
+        
+    },
+    delete: {
+        padding: 10,
+        right: 4
     },
 
     fonts: {
