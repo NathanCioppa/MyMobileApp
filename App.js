@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Button, SafeAreaView, Image, Touch, TouchableOpacity, Platform } from 'react-native';
 import Clock from './components/clock';
 import Todo from './components/todo';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 class App extends Component {
   state = { 
@@ -19,8 +20,7 @@ class App extends Component {
       greeting: ''
     },
     
-    todo: []
-
+    todo: [],
   }
   
   componentDidMount() {
@@ -61,9 +61,24 @@ class App extends Component {
     this.militaryMessage = this.state.time.military ? 'Showing military time, tap to change' : ''
   }
 
-  newId = 0
+  newId = new Date().toString()
+  generateId() {
+    const id = this.newId
+    id = id === new Date.toString() ? id + new Date().getMilliseconds().toString() + Math.floor(Math.random() * 1000).toString() : new Date.toString()
+    id = Math.floor(Math.random() * 1000)
+    console.log(id)
+    console.log(newId)
+    console.log(new Date().toString())
+  }
 
-  handleSubmit = value => {
+  constructor() {
+    super()
+    this.getData()
+  }
+
+  handleSubmit = async (value) => {
+  try {
+
     if (value !== '') {
       const todo = this.state.todo
 
@@ -72,21 +87,50 @@ class App extends Component {
       value: value
       })
 
-      this.newId++
-      //this.todoRef.current.clear()
+      this.newId = this.newId === new Date().toString() ? new Date().getMilliseconds().toString() + Math.random().toString() : new Date().toString()
       this.setState({todo})
+
+      await AsyncStorage.setItem('usertodo', JSON.stringify({todo}))
+      
     } 
+
+  } catch(e) {
+    console.log(e);
+  }
   }
 
-  handleDelete = id => {
+  getData = async () => {
+    try {
+      const usertodo = await AsyncStorage.getItem('usertodo')
+      const UserTodo = JSON.parse(usertodo)
+      if(UserTodo !== null) {
+        this.setState({...UserTodo})
+      }
+    } catch(e) {
+      console.log(e)
+    }
+  }
+
+  handleDelete = async id => {
+  try {
     const todo = this.state.todo.filter(task => task.id !== id)
     this.setState({todo})
+    await AsyncStorage.setItem('usertodo', JSON.stringify({todo}))
+  } catch(e) {
+    console.log(e)
+  }  
   }
 
-  constructor() {
-    super()
-    this.todoRef = React.createRef()
-  }
+  // for testing
+  // <Button onPress={this.clearAll} title='Dead!'></Button>
+  //clearAll = async () => {
+  //  try {
+  //    await AsyncStorage.clear()
+  //  } catch(e) {
+  //    console.log(e)
+  //  }
+  //  console.log('Done.')
+  //}
 
   render() { 
     return (
@@ -109,7 +153,6 @@ class App extends Component {
        />
 
        <Todo
-       todoRef={this.todoRef}
        onSubmit={this.handleSubmit}
        onDelete={this.handleDelete}
        todo={this.state.todo}
