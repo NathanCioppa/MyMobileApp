@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, Button, SafeAreaView, Image, Touch, TouchableOp
 import Clock from './components/clock';
 import Todo from './components/todo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Settings from './components/settings';
 
 class App extends Component {
   state = { 
@@ -121,18 +122,22 @@ class App extends Component {
   }  
   }
 
-  // for testing
-  // <Button onPress={this.clearAll} title='Dead!'></Button>
-  //clearAll = async () => {
-  //  try {
-  //    await AsyncStorage.clear()
-  //  } catch(e) {
-  //    console.log(e)
-  //  }
-  //  console.log('Done.')
-  //}
+  viewSettings = false
 
-  render() { 
+  toggleSettings = () => {
+    this.viewSettings = this.viewSettings ? false : true
+  }
+
+  render() {
+  if (this.viewSettings) {
+    return ( 
+      <Settings 
+      containerStyle={[styles.container, {alignItems: 'flex-start'}]}
+      onClose={this.toggleSettings}
+      />
+    )
+  } else
+
     return (
     <View style={styles.container}>
 
@@ -152,6 +157,8 @@ class App extends Component {
        day={this.state.time.day}
        />
 
+       <Button onPress={this.toggleSettings} title='settings'></Button>
+
        <Todo
        onSubmit={this.handleSubmit}
        onDelete={this.handleDelete}
@@ -170,7 +177,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(40, 40, 48)',
     padding: 10,
     paddingTop: 40,
-    alignItems: 'center',
+    alignItems: 'center'
   },
 
   greeting: {
@@ -190,5 +197,16 @@ const styles = StyleSheet.create({
     }
   }
 });
+
+// for testing
+  // <Button onPress={this.clearAll} title='Dead!'></Button>
+  //clearAll = async () => {
+  //  try {
+  //    await AsyncStorage.clear()
+  //  } catch(e) {
+  //    console.log(e)
+  //  }
+  //  console.log('Done.')
+  //}
  
 export default App;
