@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Button, SafeAreaView, Image, Touch, TouchableOpacity, Platform } from 'react-native';
+import { StyleSheet, Text, View, Button, SafeAreaView, Image, Touch, TouchableOpacity, Platform, Dimensions } from 'react-native';
 import Clock from './components/clock';
 import Todo from './components/todo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Settings from './components/settings';
-
+import FontAwesome from '@expo/vector-icons/FontAwesome'
 class App extends Component {
   state = { 
     time: {
@@ -129,17 +129,9 @@ class App extends Component {
   }
 
   render() {
-  if (this.viewSettings) {
-    return ( 
-      <Settings 
-      containerStyle={[styles.container, {alignItems: 'flex-start'}]}
-      onClose={this.toggleSettings}
-      />
-    )
-  } else
-
-    return (
-    <View style={styles.container}>
+    return(<View style={{flex: 1, backgroundColor: 'rgb(40, 40, 48)'}}>{
+      !this.viewSettings ? 
+      <View style={styles.container}>
 
       <StatusBar style="light" />
 
@@ -157,16 +149,31 @@ class App extends Component {
        day={this.state.time.day}
        />
 
-       <Button onPress={this.toggleSettings} title='settings'></Button>
-
        <Todo
        onSubmit={this.handleSubmit}
        onDelete={this.handleDelete}
        todo={this.state.todo}
        />
 
-    </View>
-    );
+      <View style={styles.settings}>
+      <FontAwesome.Button 
+      name='gear' 
+      onPress={this.toggleSettings} 
+      backgroundColor={'transparent'} 
+      color="steelblue"
+      size={30}
+      />
+      </View>
+
+      
+
+    </View> 
+    :
+    <Settings 
+    containerStyle={[styles.container, {alignItems: 'flex-start'}]}
+    onClose={this.toggleSettings}
+    />
+    }</View>)
   }
 }
 
@@ -180,9 +187,18 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
 
+  settings: {
+    position: 'absolute',
+    alignSelf: 'flex-start',
+    padding: 10,
+    paddingTop: 40
+  },
+
   greeting: {
     fontSize: 30,
-    color: 'white'
+    color: 'white',
+    width: 250,
+    textAlign: 'center'
   },
   
   fonts: {
