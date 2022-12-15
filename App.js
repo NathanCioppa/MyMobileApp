@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useReducer } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Button, SafeAreaView, Image, Touch, TouchableOpacity, Platform, Dimensions } from 'react-native';
 import Clock from './components/clock';
@@ -20,17 +20,30 @@ class App extends Component {
       sec: new Date().getSeconds().toString(),
       greeting: ''
     },
+
+    greetings: {
+      mor: '',
+      aft: '',
+      eve: '',
+    },
+
+    greetingSize: 30,
     
     todo: [],
   }
-  
-  componentDidMount() {
+
+  constructor() {
+    super()
+    this.getData()
+  }
+
+  getTime = () => {
     const time = this.state.time
+    const greetings = this.state.greetings
     const week = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
     const month = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    const hour =  new Date().getHours()
 
-    function getTime() {
-      const hour = new Date().getHours()
       const min = new Date().getMinutes()
       const sec = new Date().getSeconds()
 
@@ -44,15 +57,22 @@ class App extends Component {
       time.month = month[new Date().getMonth()]
       time.day = new Date().getDate()
 
-      time.greeting = hour < 6 ? 'Good Evening' : hour < 12 ? 'Good Morning' : hour < 18 ? 'Good Afternoon' : 'Good Evening'
-    }
-    getTime()
-    this.setState({time})
+      time.greeting = hour < 6 ? greetings.eve : hour < 12 ? greetings.mor : hour < 18 ? greetings.aft : greetings.eve
+  }
 
+  componentDidMount() {
+    const time = this.state.time
+    this.setState(this.state.greetings)
+    this.setState({time})
+    //this.setState(this.state)
+    this.getTime()
+    
+    
     setInterval(() => {
-      getTime()  
+      this.getTime()
       this.setState({time})
     }, 100)
+    
   }
 
   militaryMessage = ''
@@ -63,19 +83,6 @@ class App extends Component {
   }
 
   newId = new Date().toString()
-  generateId() {
-    const id = this.newId
-    id = id === new Date.toString() ? id + new Date().getMilliseconds().toString() + Math.floor(Math.random() * 1000).toString() : new Date.toString()
-    id = Math.floor(Math.random() * 1000)
-    console.log(id)
-    console.log(newId)
-    console.log(new Date().toString())
-  }
-
-  constructor() {
-    super()
-    this.getData()
-  }
 
   handleSubmit = async (value) => {
   try {
@@ -100,18 +107,6 @@ class App extends Component {
   }
   }
 
-  getData = async () => {
-    try {
-      const usertodo = await AsyncStorage.getItem('usertodo')
-      const UserTodo = JSON.parse(usertodo)
-      if(UserTodo !== null) {
-        this.setState({...UserTodo})
-      }
-    } catch(e) {
-      console.log(e)
-    }
-  }
-
   handleDelete = async id => {
   try {
     const todo = this.state.todo.filter(task => task.id !== id)
@@ -128,7 +123,82 @@ class App extends Component {
     this.viewSettings = this.viewSettings ? false : true
   }
 
-  render() {
+  handleEditMor = async text => {
+    try {
+      const greetings = this.state.greetings
+      greetings.mor = text === '' ? 'Good Morning' : text
+      this.setState({greetings})
+      await AsyncStorage.setItem('userGreets', JSON.stringify({greetings}))
+    } catch (e) {
+      console.log(e)
+    }
+  }
+  handleEditAft = async text => {
+    try {
+      const greetings = this.state.greetings
+      greetings.aft = text === '' ? 'Good Afternoon' : text
+      this.setState({greetings})
+      await AsyncStorage.setItem('userGreets', JSON.stringify({greetings}))
+    } catch (e) {
+      console.log(e)
+    }  
+  }
+  handleEditEve = async text => {
+    try {
+      const greetings = this.state.greetings
+      greetings.eve = text === '' ? 'Good Evening' : text
+      this.setState({greetings})
+      await AsyncStorage.setItem('userGreets', JSON.stringify({greetings}))
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  handleFont = async size => {
+    console.log(size)
+    try {
+      let greetingSize = this.state.greetingSize
+      greetingSize = size === '' ? 30 : size
+      this.setState({greetingSize})
+      console.log(greetingSize)
+      await AsyncStorage.setItem('userFont', JSON.stringify({greetingSize}))
+    } catch (e) {
+      console.log(e)
+    }
+      
+  }
+
+  getData = async () => {
+    try {
+      const usertodo = await AsyncStorage.getItem('usertodo')
+      const UserTodo = JSON.parse(usertodo)
+      if(UserTodo !== null) {
+        this.setState({...UserTodo})
+      }
+
+      const usergreets = await AsyncStorage.getItem('userGreets')
+      const UserGreets = JSON.parse(usergreets)
+      if (UserGreets !== null) {
+        this.setState({...UserGreets})
+      }
+      this.state.greetings.eve = this.state.greetings.eve === '' ? 'Good Evening' : this.state.greetings.eve
+      this.state.greetings.aft = this.state.greetings.aft === '' ? 'Good Afternoon' : this.state.greetings.aft
+      this.state.greetings.mor = this.state.greetings.mor === '' ? 'Good Morning' : this.state.greetings.mor
+
+      const userfont = await AsyncStorage.getItem('userFont')
+      const UserFont = JSON.parse(userfont)
+      if (UserFont !== null) {
+        this.setState({...UserFont})
+        console.log(this.state.greetingSize)
+        console.log(UserFont)
+      }
+
+    } catch(e) {
+      console.log(e)
+    }
+  }
+
+  render() { 
     return(<View style={{flex: 1, backgroundColor: 'rgb(40, 40, 48)'}}>{
       !this.viewSettings ? 
       <View style={styles.container}>
@@ -165,13 +235,19 @@ class App extends Component {
       />
       </View>
 
-      
-
     </View> 
     :
     <Settings 
     containerStyle={[styles.container, {alignItems: 'flex-start'}]}
     onClose={this.toggleSettings}
+    onEditMor={this.handleEditMor}
+    morGreet={this.state.greetings.mor}
+    onEditAft={this.handleEditAft}
+    aftGreet={this.state.greetings.aft}
+    onEditEve={this.handleEditEve}
+    eveGreet={this.state.greetings.eve}
+    onEditFont={this.handleFont}
+    fontSize={this.state.greetingSize}
     />
     }</View>)
   }
@@ -215,14 +291,17 @@ const styles = StyleSheet.create({
 });
 
 // for testing
-  // <Button onPress={this.clearAll} title='Dead!'></Button>
-  //clearAll = async () => {
-  //  try {
-  //    await AsyncStorage.clear()
-  //  } catch(e) {
-  //    console.log(e)
-  //  }
-  //  console.log('Done.')
-  //}
+// <Button onPress={this.clearAll} title='Dead!'></Button>
+//clearAll = async () => {
+//  try {
+//    await AsyncStorage.clear()
+//} catch(e) {
+//    console.log(e)
+//}
+//  console.log('Done.')
+//}
+
+  
+  
  
 export default App;
